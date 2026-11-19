@@ -1,0 +1,14 @@
+# Links of pejeded.studio#0001. Every link says why: a shared node, the same screen in two brands, a contract between services.
+issues: []      # - {ref: "sosed.place#0007", why: "..."}
+commits: []     # - "xor.ad@abc1234"
+files:
+  - ".gitignore"
+  - "docs/START-HERE.md"
+  - "docs/first-message.txt"
+  - "CLAUDE.md"
+  - "README.md"
+  - "LICENSE"
+  - "docs/spec/"
+  - "docs/archive/"
+  - "docs/prototype/"
+  - "docs/environment.md"

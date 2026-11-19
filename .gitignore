@@ -1,0 +1,44 @@
+# Сборка
+/build/
+/build-*/
+/cmake-build-*/
+/out/
+CMakeUserPresets.json
+compile_commands.json
+
+# Редакторы и система
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+.claude/settings.local.json
+
+# Репозиторий открытый: звук, видео, снимки, база данных и личные файлы сюда не попадают никогда.
+# Программа хранит их в домашней папке; строки ниже страхуют от случайного git add.
+*.wav
+*.flac
+*.mp3
+*.aiff
+*.aif
+*.ogg
+*.m4a
+*.mp4
+*.mkv
+*.mov
+*_shot.png
+*.db
+*.db-wal
+*.db-shm
+*.log
+/recordings/
+/reports/
+/settings.json
+/session.json
+.env
+.env.*
+*.pem
+*.key
+
+# Local scratch: archives, unpacked material
+/tmp/
