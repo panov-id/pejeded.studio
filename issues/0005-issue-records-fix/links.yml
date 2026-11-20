@@ -1,0 +1,6 @@
+# Links of pejeded.studio#0005. Every link says why: a shared node, the same screen in two brands, a contract between services.
+issues:
+  - {ref: "pejeded.studio#0007", why: "T4 note decision affects START-HERE text"}
+  - {ref: "pejeded.studio#0003", why: "rewrites stale records of 0001-0003"}
+commits: []
+files: []

@@ -1,6 +1,6 @@
 # Links of pejeded.studio#0002. Every link says why: a shared node, the same screen in two brands, a contract between services.
-issues:      # - {ref: "sosed.place#0007", why: "..."}
+issues:
   - {ref: "pejeded.studio#0003", why: "START-HERE step 3 tells to paste this message"}
-commits: []     # - "xor.ad@abc1234"
+commits: []
 files:
   - "docs/START-HERE.md"

@@ -1,0 +1,17 @@
+services:
+  dev:
+    build:
+      context: .
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: pejeded-studio-dev
+    volumes:
+      - .:/src
+    working_dir: /src
+  test:
+    image: pejeded-studio-dev
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: bash -c "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build && ctest --test-dir build --output-on-failure"

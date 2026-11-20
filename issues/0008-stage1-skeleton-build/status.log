@@ -1,0 +1,5 @@
+# date · status · who · why
+2026-11-19 17:59 · draft · claude · created
+2026-11-20 08:22 · in-progress · claude · stage 1 work going: outputs, console, db, wizard built; soak not passed yet
+2026-11-20 09:58 · in-progress · claude · 30 min soak PASS under load (ran 1807 s, drops 0, growth 0.0 %, 30 samples, ~/pejeded-soak/20261120-092636); control soak without inhibit running
+2026-11-20 10:03 · in-progress · claude · note: that PASS ran the previous refusal check; the narrowed one (answer line after each set) was tried only on saved logs, first live use is the control soak

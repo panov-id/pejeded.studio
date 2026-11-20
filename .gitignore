@@ -42,3 +42,30 @@ compile_commands.json
 
 # Local scratch: archives, unpacked material
 /tmp/
+!issues/*/status.log
+
+# panel 19.11 S8: local tool state and more audio
+.claude/*
+!.claude/settings.json
+*.opus
+*.wma
+*.aac
+*.sqlite*
+*.db.bak
+# panel 19.11 second run: uppercase audio, db copies, video, build
+*.WAV
+*.MP3
+*.FLAC
+*.AIFF
+*.AIF
+*.M4A
+*.OGG
+*.Flac
+*.Wav
+*.Mp3
+studio.db*
+*.db-journal
+*.webm
+*.avi
+*.p12
+build/

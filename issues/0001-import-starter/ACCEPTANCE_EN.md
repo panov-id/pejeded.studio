@@ -13,5 +13,5 @@
 ## Acceptance (as the customer)
 Asked: see ACCEPTANCE_RU.md (owner words verbatim)
 Got: 33 files in root, 2 in docs/, archive in tmp/ outside git; 6 of 6 checks PASS
-Missing: commit and push (owner: not yet)
+Missing: owner acceptance (commit 1b92048 pushed to origin/main)
 Verdict: would return — 6 of 6 checks PASS, but status accepted is owner-only (rule 37); acceptance delegated by owner 19.11.2026

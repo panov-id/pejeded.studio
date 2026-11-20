@@ -1,6 +1,8 @@
 # Links of pejeded.studio#0001. Every link says why: a shared node, the same screen in two brands, a contract between services.
-issues: []      # - {ref: "sosed.place#0007", why: "..."}
-commits: []     # - "xor.ad@abc1234"
+issues:
+  - {ref: "pejeded.studio#0006", why: "extends .gitignore laid out in 0001"}
+  - {ref: "pejeded.studio#0004", why: "fixes the acceptance script of 0001-0003"}
+commits: []
 files:
   - ".gitignore"
   - "docs/START-HERE.md"

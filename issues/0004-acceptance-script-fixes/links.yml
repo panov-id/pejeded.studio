@@ -1,0 +1,6 @@
+# Links of pejeded.studio#0004. Every link says why: a shared node, the same screen in two brands, a contract between services.
+issues:
+  - {ref: "pejeded.studio#0007", why: "lens rerun goes after 0004-0006 are done"}
+  - {ref: "pejeded.studio#0001", why: "fixes the acceptance script of 0001-0003"}
+commits: []
+files: []

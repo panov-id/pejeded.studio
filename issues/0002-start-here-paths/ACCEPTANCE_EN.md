@@ -9,5 +9,5 @@
 ## Acceptance (as the customer)
 Asked: see ACCEPTANCE_RU.md (owner words verbatim)
 Got: steps 1-3 for clone and run in root; 2 of 2 checks PASS
-Missing: commit and push (owner: not yet)
+Missing: owner acceptance (commit 1b92048 pushed to origin/main)
 Verdict: would return — 2 of 2 checks PASS, but status accepted is owner-only (rule 37); acceptance delegated by owner 19.11.2026

@@ -1,0 +1,32 @@
+# generated from docs/spec/14-emulators.md (DEMO example)
+# DEMO.TXT
+NAME    DEMO
+TEMPO   126
+LENGTH  64              # ВСЕГО ШАГОВ, ОТ 16 ДО 256
+GRID    16              # ШАГОВ В ТАКТЕ, ДЛЯ РАЗМЕТКИ МАТРИЦЫ
+
+# ФРАГМЕНТЫ: ИМЯ = ШАГИ.  X АКЦЕНТ, x ОБЫЧНЫЙ УДАР
+A = X000 x000 x000 x000
+B = X000 x000 X0x0 x0XX
+H = (10)X8
+
+[1] DRUMS
+KICK    A A A B
+TICK    /2                    SC
+CLAP    /8+4                  PP=3 RV=0.4
+HAT     H
+  PAN   = SIN(32) * 0.8       # ХЭТ ПЛАВНО ХОДИТ СЛЕВА НАПРАВО
+  LEVEL = 0.5 + KICK * 0.3    # НА БОЧКЕ ХЭТ ГРОМЧЕ
+
+[2] BASS  OCT=2
+(1[C]111 0000  1[f]111 0000)X4
+
+[3] PLUCK  OCT=4 ARP=UP SP=8
+(1[C,E,G]111 1111)X4  (1[f,a,c]111 1111)X4
+
+[4] PAD  W=1 RV=0.6
+1[amin]111 1111 1111 1111
+
+[5] LEAD  OCT=4 SCALE=AMIN
+X0x0 x0x0 X0xx x0x0
+  NOTE  = N*2 % 7 + B         # ТЕРЦИИ ПО ЛАДУ, КАЖДЫЙ ТАКТ НА СТУПЕНЬ ВЫШЕ
