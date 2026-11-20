@@ -31,7 +31,7 @@ jobs:
             exit 1; }
       - name: Skipped checks
         if: always()
-        run: grep -h '^SKIP' test.log | sort -u | while IFS= read -r l; do echo "::notice::$l"; done || true
+        run: grep -oE 'SKIP: .*' test.log | sort -u | while IFS= read -r l; do echo "::notice::$l"; done || true
       - name: Pack
         run: cd build && ditto -c -k --keepParent "$(find . -name 'PejededStudio.app' -path '*Release*' | head -1)" PejededStudio-macos.zip
       - uses: actions/upload-artifact@v4
