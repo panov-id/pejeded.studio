@@ -1210,7 +1210,6 @@ public:
         return false;
     }
     juce::String consoleInput() const { return console.inputText(); }
-    void focusConsoleInput() { if (console.isVisible()) console.focusInput(); }
     bool consoleTypeKey(const juce::KeyPress& k) { return console.isVisible() && console.typeKey(k); }
     void toggleConsole(bool open) {
         consoleOpen = open;
@@ -1404,13 +1403,6 @@ public:
                 for (size_t i = 2; i < a.size(); ++i) text += (i > 2 ? " " : "") + juce::String(a[i]);
                 auto name = [](juce::Component* x) { return x ? (x->getName().isEmpty() ? juce::String(typeid(*x).name()) : x->getName()).toStdString() : std::string("none"); };
                 std::string before = name(juce::Component::getCurrentlyFocusedComponent());
-                // macOS gives keys only to the front app; a CI runner starts us in the back, so bring the window forward first
-                if (peer && !peer->isFocused()) {
-                    juce::Process::makeForegroundProcess();
-                    m->getTopLevelComponent()->toFront(true);
-                    m->focusConsoleInput();
-                    before = name(juce::Component::getCurrentlyFocusedComponent()) + " (after front)";
-                }
                 int taken = 0;
                 // the window peer when it has focus; else (Mac runner in the back) the same order by hand: the line first, then the window
                 bool viaPeer = peer && peer->isFocused();

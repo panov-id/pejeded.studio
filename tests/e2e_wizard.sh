@@ -10,6 +10,8 @@ mkdir -p "$home/tracks"
 fail=0
 # Linux container: no screen, so xvfb-run; macOS runner has a screen and no xvfb-run
 xr=""; command -v xvfb-run >/dev/null && xr="xvfb-run -a"
+# the app must never open on the owner's desktop: on Linux these checks run only under xvfb (the test container)
+if [ -z "$xr" ] && [ "$(uname)" = Linux ]; then echo "FAIL: no xvfb-run here; run in the container (docker compose run --rm test), not on the desktop"; exit 1; fi
 to=""; command -v timeout >/dev/null && to="timeout 60"   # macOS has no timeout
 cfgdir="$home/.config/pejeded-studio"; [ "$(uname)" = Darwin ] && cfgdir="$home/Library/Application Support/PEJEDED STUDIO"
 expect() { if grep -qF -- "$2" <<<"$1"; then echo "ok: $2"; else echo "MISSING: $2"; grep -F -- "${2%% *}" <<<"$1" | head -3 | sed 's/^/  got: /'; fail=1; fi; }
@@ -57,6 +59,9 @@ expect "$out6" "| Master "                      # bottom bar: Master meter
 out7="$(HOME="$home" $to $xr "$app" --exec "wait 2500; bar; set audioOut.masterGainDb -12; wait 3500; bar; set audioOut.masterGainDb 0" 2>&1)"
 if grep -q 'Master output: $' <<<"$out7"; then
   echo "SKIP: no sound device here (container); the Master path check runs on the machine"
+elif bars=$(grep -c 'bar: .*Master ' <<<"$out7"); silent=$(grep -c 'bar: .*Master -120.0 dB' <<<"$out7"); [ -n "${GITHUB_ACTIONS:-}" ] && [ "$bars" -gt 0 ] && [ "$bars" = "$silent" ]; then
+  # Mac CI runner: a virtual device exists but the system never runs our audio callback, so Master stays at silence
+  echo "SKIP: sound device does not run here (Master stays at -120 dB); the Master path check runs on the machine"
 else
   [ "$(grep -c 'bar: .* CLIP' <<<"$out7")" = 1 ] && echo "ok: limiter on the output, Master gain applied" || { echo "MISSING: CLIP at 0 dB and none at -12 dB"; grep -E "bar: |Master output" <<<"$out7" | head -6 | sed 's/^/  got: /'; fail=1; }
 fi

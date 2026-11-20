@@ -7,6 +7,8 @@ home="$(mktemp -d)"
 trap 'rm -rf -- "$home"' EXIT
 fail=0
 xr=""; command -v xvfb-run >/dev/null && xr="xvfb-run -a"
+# the app must never open on the owner's desktop: on Linux these checks run only under xvfb (the test container)
+if [ -z "$xr" ] && [ "$(uname)" = Linux ]; then echo "FAIL: no xvfb-run here; run in the container (docker compose run --rm test), not on the desktop"; exit 1; fi
 to=""; command -v timeout >/dev/null && to="timeout 90"
 
 t0=$(date +%s)
