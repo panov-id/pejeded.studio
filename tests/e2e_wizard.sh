@@ -12,7 +12,7 @@ fail=0
 xr=""; command -v xvfb-run >/dev/null && xr="xvfb-run -a"
 to=""; command -v timeout >/dev/null && to="timeout 60"   # macOS has no timeout
 cfgdir="$home/.config/pejeded-studio"; [ "$(uname)" = Darwin ] && cfgdir="$home/Library/Application Support/PEJEDED STUDIO"
-expect() { if grep -qF -- "$2" <<<"$1"; then echo "ok: $2"; else echo "MISSING: $2"; fail=1; fi; }
+expect() { if grep -qF -- "$2" <<<"$1"; then echo "ok: $2"; else echo "MISSING: $2"; grep -F -- "${2%% *}" <<<"$1" | head -3 | sed 's/^/  got: /'; fail=1; fi; }
 
 out="$(HOME="$home" $to $xr "$app" --exec "wait 500; press Next; press Next; press Play test tone; press Next; type $home/tracks; press Next; type $home/rec; press Test write; press Next; press Finish; wait 300; press Fix; press Skip" 2>&1)"
 
@@ -93,7 +93,8 @@ out13="$(HOME="$home" $to $xr "$app" --exec "get audioOut.blockSize; clear; help
 for c in help status devices reconnect get set log clear db sql; do expect "$out13" "console   $c  "; done
 # typing in the console goes into the line, and the key under Esc typed there does not close it (spec 15)
 out14="$(HOME="$home" $to $xr "$app" --exec "press Go; key tilde; wait 400; key type n 1 ~ x; wait 300; layers" 2>&1)"
-expect "$out14" "key type: focus text field, console line 'n 1 ~ x'"
+expect "$out14" "key type: focus text field, console line 'n 1 ~ x'" || true
+grep -qF "console line 'n 1 ~ x'" <<<"$out14" || tail -15 <<<"$out14" | sed 's/^/  out14: /'
 grep -q "layers: .*console" <<<"$out14" && echo "ok: console still open after typing" || { echo "MISSING: console still open after typing"; fail=1; }
 [ "$fail" = 0 ] || { echo "--- app output"; echo "$out"; }
 exit "$fail"
