@@ -58,7 +58,7 @@ out7="$(HOME="$home" $to $xr "$app" --exec "wait 2500; bar; set audioOut.masterG
 if grep -q 'Master output: $' <<<"$out7"; then
   echo "SKIP: no sound device here (container); the Master path check runs on the machine"
 else
-  [ "$(grep -c 'bar: .* CLIP' <<<"$out7")" = 1 ] && echo "ok: limiter on the output, Master gain applied" || { echo "MISSING: CLIP at 0 dB and none at -12 dB"; fail=1; }
+  [ "$(grep -c 'bar: .* CLIP' <<<"$out7")" = 1 ] && echo "ok: limiter on the output, Master gain applied" || { echo "MISSING: CLIP at 0 dB and none at -12 dB"; grep -E "bar: |Master output" <<<"$out7" | head -6 | sed 's/^/  got: /'; fail=1; }
 fi
 # device loss (spec 6, stage 1): the Master output is lost, warned about, and back without a restart
 out8="$(HOME="$home" $to $xr "$app" --exec "wait 2000; lose master 2000; wait 1500; bar; wait 3500; bar" 2>&1)"
@@ -93,7 +93,8 @@ out13="$(HOME="$home" $to $xr "$app" --exec "get audioOut.blockSize; clear; help
 for c in help status devices reconnect get set log clear db sql; do expect "$out13" "console   $c  "; done
 # typing in the console goes into the line, and the key under Esc typed there does not close it (spec 15)
 out14="$(HOME="$home" $to $xr "$app" --exec "press Go; key tilde; wait 400; key type n 1 ~ x; wait 300; layers" 2>&1)"
-expect "$out14" "key type: focus text field, console line 'n 1 ~ x'" || true
+# Mac runner: the app is in the back and gets no OS focus, so keys go to the line directly ("line direct")
+grep -qE "key type: focus (text field|line direct), console line 'n 1 ~ x'" <<<"$out14" && echo "ok: typing reaches the console line" || { echo "MISSING: typing reaches the console line"; grep -F "key type" <<<"$out14" | sed 's/^/  got: /'; fail=1; }
 grep -qF "console line 'n 1 ~ x'" <<<"$out14" || tail -15 <<<"$out14" | sed 's/^/  out14: /'
 grep -q "layers: .*console" <<<"$out14" && echo "ok: console still open after typing" || { echo "MISSING: console still open after typing"; fail=1; }
 [ "$fail" = 0 ] || { echo "--- app output"; echo "$out"; }

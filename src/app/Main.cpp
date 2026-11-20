@@ -473,6 +473,7 @@ public:
         logView.setBounds(r);
     }
     void focusInput() { input.grabKeyboardFocus(); }
+    bool typeKey(const juce::KeyPress& k) { return input.keyPressed(k); }  // key to the line without OS focus (Mac CI)
     juce::String inputText() const { return input.getText(); }
     bool keyPressed(const juce::KeyPress& k) override {
         if (k.getModifiers().isCtrlDown() && k.getKeyCode() == 'C' && !input.getHighlightedRegion().getLength()) { sys.stop(); return true; }
@@ -1210,6 +1211,7 @@ public:
     }
     juce::String consoleInput() const { return console.inputText(); }
     void focusConsoleInput() { if (console.isVisible()) console.focusInput(); }
+    bool consoleTypeKey(const juce::KeyPress& k) { return console.isVisible() && console.typeKey(k); }
     void toggleConsole(bool open) {
         consoleOpen = open;
         studio.console.log("ui", open ? "console opened" : "console closed");
@@ -1410,13 +1412,19 @@ public:
                     before = name(juce::Component::getCurrentlyFocusedComponent()) + " (after front)";
                 }
                 int taken = 0;
-                if (peer) for (auto ch : text) taken += peer->handleKeyPress(juce::KeyPress(int(ch), 0, ch)) ? 1 : 0;
+                // the window peer when it has focus; else (Mac runner in the back) the same order by hand: the line first, then the window
+                bool viaPeer = peer && peer->isFocused();
+                for (auto ch : text) {
+                    juce::KeyPress k(int(ch), 0, ch);
+                    taken += (viaPeer ? peer->handleKeyPress(k) : (m->consoleTypeKey(k) || m->keyPressed(k))) ? 1 : 0;
+                }
+                before += viaPeer ? ", via peer" : ", via line";
                 auto* fc = juce::Component::getCurrentlyFocusedComponent();
                 // debug for the Mac runner: is there a peer, is the window and the app in front, where focus was
                 c.print("key type: peer " + std::string(peer ? "yes" : "no") + ", peer focused " + std::string(peer && peer->isFocused() ? "yes" : "no")
                         + ", app in front " + std::string(juce::Process::isForegroundProcess() ? "yes" : "no")
                         + ", focus before " + before + ", after " + name(fc) + ", keys taken " + std::to_string(taken) + " of " + std::to_string(text.length()));
-                c.print("key type: focus " + (fc ? (dynamic_cast<juce::TextEditor*>(fc) ? std::string("text field") : std::string("other")) : std::string("none")) + ", console line '" + m->consoleInput().toStdString() + "'");
+                c.print("key type: focus " + (fc ? (dynamic_cast<juce::TextEditor*>(fc) ? std::string("text field") : std::string("other")) : std::string(viaPeer ? "none" : "line direct")) + ", console line '" + m->consoleInput().toStdString() + "'");
                 return;
             }
             m->keyPressed(a[1] == "esc" ? juce::KeyPress(juce::KeyPress::escapeKey) : juce::KeyPress('`', 0, '`'));
