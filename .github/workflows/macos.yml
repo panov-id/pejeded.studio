@@ -14,7 +14,11 @@ jobs:
         run: |
           set -o pipefail
           cmake --build build --config Release 2>&1 | tee build.log || {
-            grep -E "error:|fatal error|Undefined symbols|ld: " build.log | sort -u | head -40 | while IFS= read -r l; do echo "::error::$l"; done
+            # the 20 lines before the first error name the source file and its include chain
+            n=$(grep -n -m1 -E "error:|Undefined symbols" build.log | cut -d: -f1 || echo 1)
+            # GitHub keeps at most 10 error annotations per step, so the context is one annotation
+            echo "::error::ctx%0A$(sed -n "$(( n > 20 ? n - 20 : 1 )),${n}p" build.log | cut -c1-600 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+            grep -E "error:|fatal error|Undefined symbols|ld: " build.log | sort -u | head -8 | while IFS= read -r l; do echo "::error::$l"; done
             exit 1; }
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
