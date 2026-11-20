@@ -307,7 +307,9 @@ void applyOutput(Studio& st) {
 
 // Where settings and data live (spec 16): XDG folders on Linux, ~/Library/Application Support on macOS.
 juce::File appDir(const char* kind) {
-    auto home = juce::File::getSpecialLocation(juce::File::userHomeDirectory);
+    // HOME first: on macOS JUCE asks the system for the home folder and ignores HOME, so a test with its own HOME wrote into the real one
+    const char* h = std::getenv("HOME");
+    auto home = (h && *h && juce::File::isAbsolutePath(h)) ? juce::File(h) : juce::File::getSpecialLocation(juce::File::userHomeDirectory);
 #if JUCE_MAC
     juce::ignoreUnused(kind);
     return home.getChildFile("Library/Application Support/PEJEDED STUDIO");
@@ -1207,6 +1209,7 @@ public:
         return false;
     }
     juce::String consoleInput() const { return console.inputText(); }
+    void focusConsoleInput() { if (console.isVisible()) console.focusInput(); }
     void toggleConsole(bool open) {
         consoleOpen = open;
         studio.console.log("ui", open ? "console opened" : "console closed");
@@ -1399,6 +1402,13 @@ public:
                 for (size_t i = 2; i < a.size(); ++i) text += (i > 2 ? " " : "") + juce::String(a[i]);
                 auto name = [](juce::Component* x) { return x ? (x->getName().isEmpty() ? juce::String(typeid(*x).name()) : x->getName()).toStdString() : std::string("none"); };
                 std::string before = name(juce::Component::getCurrentlyFocusedComponent());
+                // macOS gives keys only to the front app; a CI runner starts us in the back, so bring the window forward first
+                if (peer && !peer->isFocused()) {
+                    juce::Process::makeForegroundProcess();
+                    m->getTopLevelComponent()->toFront(true);
+                    m->focusConsoleInput();
+                    before = name(juce::Component::getCurrentlyFocusedComponent()) + " (after front)";
+                }
                 int taken = 0;
                 if (peer) for (auto ch : text) taken += peer->handleKeyPress(juce::KeyPress(int(ch), 0, ch)) ? 1 : 0;
                 auto* fc = juce::Component::getCurrentlyFocusedComponent();
