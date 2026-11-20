@@ -1397,8 +1397,15 @@ public:
                 auto* peer = m->getPeer();
                 juce::String text;
                 for (size_t i = 2; i < a.size(); ++i) text += (i > 2 ? " " : "") + juce::String(a[i]);
-                if (peer) for (auto ch : text) peer->handleKeyPress(juce::KeyPress(int(ch), 0, ch));
+                auto name = [](juce::Component* x) { return x ? (x->getName().isEmpty() ? juce::String(typeid(*x).name()) : x->getName()).toStdString() : std::string("none"); };
+                std::string before = name(juce::Component::getCurrentlyFocusedComponent());
+                int taken = 0;
+                if (peer) for (auto ch : text) taken += peer->handleKeyPress(juce::KeyPress(int(ch), 0, ch)) ? 1 : 0;
                 auto* fc = juce::Component::getCurrentlyFocusedComponent();
+                // debug for the Mac runner: is there a peer, is the window and the app in front, where focus was
+                c.print("key type: peer " + std::string(peer ? "yes" : "no") + ", peer focused " + std::string(peer && peer->isFocused() ? "yes" : "no")
+                        + ", app in front " + std::string(juce::Process::isForegroundProcess() ? "yes" : "no")
+                        + ", focus before " + before + ", after " + name(fc) + ", keys taken " + std::to_string(taken) + " of " + std::to_string(text.length()));
                 c.print("key type: focus " + (fc ? (dynamic_cast<juce::TextEditor*>(fc) ? std::string("text field") : std::string("other")) : std::string("none")) + ", console line '" + m->consoleInput().toStdString() + "'");
                 return;
             }

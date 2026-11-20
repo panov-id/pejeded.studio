@@ -26,6 +26,7 @@ jobs:
           set -o pipefail
           ctest --test-dir build -C Release --output-on-failure 2>&1 | tee test.log || {
             echo "::error::failed: $(grep -E '\*\*\*Failed|Failed  |Not Run|Timeout' test.log | tr '\n' ' ' | cut -c1-800)"
+            echo "::error::misses%0A$(grep -E '^(MISSING|  got:|  out14:)' test.log | head -40 | cut -c1-300 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
             echo "::error::tail%0A$(tail -60 test.log | cut -c1-300 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
             exit 1; }
       - name: Pack
